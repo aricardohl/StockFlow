@@ -26,6 +26,13 @@ const create = async (req, res) => {
     const branch = await Branch.create(req.body);
     return res.status(201).json({ status: 'success', data: branch });
   } catch (error) {
+    if (error.name === 'ValidationError') {
+      const details = Object.keys(error.errors || {}).reduce((acc, key) => {
+        acc[key] = error.errors[key].message;
+        return acc;
+      }, {});
+      return res.status(400).json({ status: 'error', message: 'Datos inválidos', errors: details });
+    }
     return res.status(500).json({ status: 'error', message: 'Error interno del servidor' });
   }
 };
@@ -41,6 +48,13 @@ const update = async (req, res) => {
     }
     return res.status(200).json({ status: 'success', data: branch });
   } catch (error) {
+    if (error.name === 'ValidationError') {
+      const details = Object.keys(error.errors || {}).reduce((acc, key) => {
+        acc[key] = error.errors[key].message;
+        return acc;
+      }, {});
+      return res.status(400).json({ status: 'error', message: 'Datos inválidos', errors: details });
+    }
     return res.status(500).json({ status: 'error', message: 'Error interno del servidor' });
   }
 };
@@ -53,6 +67,13 @@ const remove = async (req, res) => {
     }
     return res.status(200).json({ status: 'success', message: 'Sucursal eliminada exitosamente' });
   } catch (error) {
+    if (error.name === 'ValidationError') {
+      const details = Object.keys(error.errors || {}).reduce((acc, key) => {
+        acc[key] = error.errors[key].message;
+        return acc;
+      }, {});
+      return res.status(400).json({ status: 'error', message: 'Datos inválidos', errors: details });
+    }
     return res.status(500).json({ status: 'error', message: 'Error interno del servidor' });
   }
 };
