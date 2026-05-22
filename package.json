@@ -1,0 +1,8 @@
+{
+  "workspaces": [
+    "packages/*"
+  ],
+  "dependencies": {
+    "@s-ui/mono": "^2.46.0"
+  }
+}
