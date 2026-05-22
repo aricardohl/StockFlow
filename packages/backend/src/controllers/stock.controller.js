@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const Stock = require('../models/stock');
 
 const getAll = async (req, res) => {
@@ -6,11 +7,11 @@ const getAll = async (req, res) => {
     if (req.query.product) filter.producto = req.query.product;
     if (req.query.branch)  filter.sucursal = req.query.branch;
 
-    if(mongoose.Types.ObjectId.isValid(req.query.product)) {
+    if(!mongoose.Types.ObjectId.isValid(req.query.product)) {
       return res.status(400).json({ status: 'error', message: 'ID de producto no válido' });
     }
 
-    if(mongoose.Types.ObjectId.isValid(req.query.branch)) {
+    if(!mongoose.Types.ObjectId.isValid(req.query.branch)) {
       return res.status(400).json({ status: 'error', message: 'ID de sucursal no válido' });
     }
 
