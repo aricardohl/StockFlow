@@ -13,16 +13,22 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Conectar a MongoDB Atlas
-connectDB();
+async function startServer() {
+  try {
+    await connectDB();
+    app.listen(PORT, () => {
+      console.log(`>>> Servidor escuchando en el puerto ${PORT}`);
+    });
+  } catch (err) {
+    console.error('Fallo al conectar a MongoDB. Abortando arranque.', err);
+    process.exit(1);
+  }
+}
+
 
 // Middlewares globales
 app.use(cors());
 app.use(express.json());
-
-// Ruta de prueba inicial
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'UP', message: 'Servidor de StockFlow corriendo correctamente' });
-});
 
 // Rutas
 app.use('/api/auth', authRoutes);
@@ -32,7 +38,4 @@ app.use('/api/branch', branchRoutes);
 app.use('/api/stock',    stockRoutes);
 app.use('/api/movement', movementRoutes);
 
-// Inicializar el servidor
-app.listen(PORT, () => {
-  console.log(`>>> Servidor escuchando en el puerto ${PORT}`);
-});
+startServer();
