@@ -18,21 +18,28 @@ const PORT = process.env.PORT || 3000;
 async function startServer() {
   try {
     await connectDB();
-    await connectRabbitMQ();
-    await startWorker();
-    app.listen(PORT, () => {
-      console.log(`>>> Servidor escuchando en el puerto ${PORT}`);
-    });
   } catch (err) {
-    console.error('Fallo al iniciar el servidor. Abortando arranque.', err);
+    console.error('Fallo al conectar a MongoDB. Abortando arranque.', err);
     process.exit(1);
   }
+
+  // RabbitMQ es opcional: si no está disponible el servidor igual arranca
+  try {
+    await connectRabbitMQ();
+    await startWorker();
+  } catch (err) {
+    console.warn('[RabbitMQ] No disponible, el worker no está activo:', err.message);
+  }
+
+  app.listen(PORT, () => {
+    console.log(`>>> Servidor escuchando en el puerto ${PORT}`);
+  });
 }
 
 
 // Middlewares globales
 const corsOptions = {
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  origin: process.env.FRONTEND_URL,
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
