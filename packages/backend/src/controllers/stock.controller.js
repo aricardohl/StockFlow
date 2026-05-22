@@ -18,9 +18,9 @@ const getAll = async (req, res) => {
       filter.sucursal = req.query.branch;
     }
 
-    let query = Stock.find(filter);
-    query = filter.producto ? query.populate('producto', 'sku nombre') : query;
-    query = filter.sucursal ? query.populate('sucursal', 'nombre ubicacion') : query;
+    const query = Stock.find(filter)
+      .populate('producto', 'sku nombre categoria')
+      .populate('sucursal', 'nombre ubicacion');
 
     const data = await query;
 
