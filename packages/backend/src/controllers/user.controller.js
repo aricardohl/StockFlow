@@ -30,6 +30,10 @@ const update = async (req, res) => {
     const { name, email, password } = req.body;
     const updates = {};
 
+    if(!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ status: 'error', message: 'ID de usuario no válido' });
+    }
+
     if (name) updates.name = name;
     if (email) updates.email = email;
 
