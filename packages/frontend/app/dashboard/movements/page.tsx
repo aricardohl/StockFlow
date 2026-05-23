@@ -3,10 +3,12 @@
 import { useState, useEffect, useCallback, Fragment } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 import { format } from 'date-fns';
-import { Movement, Branch, MovementStatus } from '../../types';
+import { Movement, Branch, Product, MovementStatus } from '../../types';
 import { getMovements, getMovement } from '../../services/movementService';
 import { getBranches } from '../../services/branchService';
+import { getProducts } from '../../services/productService';
 import { usePolling } from '../../hooks/usePolling';
+import MovementForm from '../../components/movement-form';
 
 const STATUS_BADGE: Record<MovementStatus, string> = {
   pending:   'bg-yellow-100 text-yellow-700',
@@ -29,8 +31,10 @@ function getName(val: Movement['producto'] | Movement['origen']): string {
 export default function MovementsPage() {
   const [movements, setMovements] = useState<Movement[]>([]);
   const [branches, setBranches] = useState<Branch[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [statusFilter, setStatusFilter] = useState('');
   const [branchFilter, setBranchFilter] = useState('');
+  const [showForm, setShowForm] = useState(false);
   const [detail, setDetail] = useState<Movement | null>(null);
   const [loading, setLoading] = useState(true);
   const hasPending = movements.some((m) => m.estado === 'pending');
@@ -51,6 +55,7 @@ export default function MovementsPage() {
 
   useEffect(() => {
     getBranches().then(setBranches).catch(() => {});
+    getProducts().then(setProducts).catch(() => {});
     fetchMovements();
   }, [fetchMovements]);
 
@@ -72,7 +77,15 @@ export default function MovementsPage() {
 
         {/* ─── Tabla de movimientos ─── */}
         <div className="space-y-4">
-          <h1 className="text-xl font-semibold">Movimientos</h1>
+          <div className="flex items-center justify-between">
+            <h1 className="text-xl font-semibold">Movimientos</h1>
+            <button
+              onClick={() => setShowForm(true)}
+              className="px-4 py-2 bg-zinc-900 text-white text-sm rounded-md hover:bg-zinc-700 transition-colors"
+            >
+              + Nuevo Movimiento
+            </button>
+          </div>
 
           <div className="flex flex-wrap gap-3">
             <select
@@ -140,6 +153,15 @@ export default function MovementsPage() {
 
 
       </div>
+
+      {showForm && (
+        <MovementForm
+          products={products}
+          branches={branches}
+          onSuccess={() => { setShowForm(false); fetchMovements(); }}
+          onClose={() => setShowForm(false)}
+        />
+      )}
 
       {/* ─── Modal detalle ─── */}
       {detail && (

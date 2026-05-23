@@ -7,7 +7,6 @@ import { getStock } from '../services/stockService';
 import { getBranches } from '../services/branchService';
 import { getProducts } from '../services/productService';
 import StockTable from '../components/stock-table';
-import MovementForm from '../components/movement-form';
 
 export default function DashboardPage() {
   const [stocks, setStocks] = useState<Stock[]>([]);
@@ -15,7 +14,6 @@ export default function DashboardPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [selectedBranch, setSelectedBranch] = useState('');
   const [selectedProduct, setSelectedProduct] = useState('');
-  const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const fetchStock = useCallback(async () => {
@@ -45,15 +43,7 @@ export default function DashboardPage() {
     <>
       <Toaster />
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <h1 className="text-xl font-semibold">Stock Global</h1>
-          <button
-            onClick={() => setShowForm(true)}
-            className="px-4 py-2 bg-zinc-900 text-white text-sm rounded-md hover:bg-zinc-700 transition-colors"
-          >
-            + Nuevo Movimiento
-          </button>
-        </div>
+        <h1 className="text-xl font-semibold">Stock Global</h1>
 
         <StockTable
           stocks={stocks}
@@ -66,14 +56,7 @@ export default function DashboardPage() {
         />
       </div>
 
-      {showForm && (
-        <MovementForm
-          products={products}
-          branches={branches}
-          onSuccess={() => { setShowForm(false); fetchStock(); }}
-          onClose={() => setShowForm(false)}
-        />
-      )}
+
     </>
   );
 }
