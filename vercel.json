@@ -1,3 +1,16 @@
 {
-  "version": 2
+  "version": 2,
+  "installCommand": "npm install",
+  "buildCommand": "npm run build --prefix packages/frontend",
+  "experimentalServices": {
+    "frontend": {
+      "root": "packages/frontend",
+      "routePrefix": "/",
+      "framework": "nextjs"
+    },
+    "backend": {
+      "root": "packages/backend",
+      "routePrefix": "/_/backend"
+    }
+  }
 }
