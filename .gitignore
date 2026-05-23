@@ -1,6 +1,14 @@
+package-lock.json
 node_modules/
 dist/
 .env
 .vscode/
 .idea/
 .DS_Store
+notas-prueba
+.github
+data/
+AGENTS.md
+CLAUDE.md
+.gitignore
+.dockerignore
