@@ -117,7 +117,7 @@ const report = async (req, res) => {
           as:           'sucursalInfo',
         },
       },
-      { $unwind: { path: '$sucursalInfo', preserveNullAndEmpty: true } },
+      { $unwind: { path: '$sucursalInfo', preserveNullAndEmptyArrays: true } },
       {
         $project: {
           _id:              0,
