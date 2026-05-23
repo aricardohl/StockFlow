@@ -126,13 +126,13 @@ export default function ProductsPage() {
                 { key: 'nombre', label: 'Nombre', type: 'text' },
                 { key: 'categoria', label: 'Categoría', type: 'text' },
                 { key: 'precio', label: 'Precio', type: 'number' },
-              ] as const).map(({ key, label, type, readonly }) => (
+              ] as const).map(({ key, label, type }) => (
                 <div key={key}>
                   <label className="block text-sm font-medium mb-1">{label}</label>
                   <input
                     type={type}
                     required
-                    readOnly={readonly}
+                    readOnly={type === 'text' && modal === 'edit'}
                     value={form[key]}
                     onChange={(e) =>
                       setForm((f) => ({ ...f, [key]: type === 'number' ? Number(e.target.value) : e.target.value }))
