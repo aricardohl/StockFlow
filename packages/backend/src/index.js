@@ -19,22 +19,27 @@ async function startServer() {
     console.log(`>>> Servidor escuchando en el puerto ${PORT}`);
   });
 
-  // RabbitMQ en background: si falla no bloquea el servidor
-  connectRabbitMQ()
-    .then(async (res) => {
-      if (!res) {
-        console.warn('[RabbitMQ] Conexión fallida. Worker no arrancará.');
-        return;
-      }
-      try {
-        await startWorker();
-      } catch (err) {
-        console.warn('[RabbitMQ] Error al arrancar el worker:', err.message);
-      }
-    })
-    .catch((err) => {
-      console.warn('[RabbitMQ] No disponible, el worker no está activo:', err.message);
-    });
+  // Worker solo se arranca si ENABLE_WORKER=true
+  // En producción usa un Background Worker separado en Render con: node src/worker.js
+  if (process.env.ENABLE_WORKER) {
+    connectRabbitMQ()
+      .then(async (res) => {
+        if (!res) {
+          console.warn('[RabbitMQ] Conexión fallida. Worker no arrancará.');
+          return;
+        }
+        try {
+          await startWorker();
+        } catch (err) {
+          console.warn('[RabbitMQ] Error al arrancar el worker:', err.message);
+        }
+      })
+      .catch((err) => {
+        console.warn('[RabbitMQ] No disponible, el worker no está activo:', err.message);
+      });
+  } else {
+    console.log('[Worker] Desactivado (ENABLE_WORKER != true). Usa el servicio worker separado.');
+  }
 }
 
 startServer();
