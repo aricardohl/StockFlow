@@ -2,7 +2,14 @@
   "workspaces": [
     "packages/*"
   ],
+  "scripts": {
+    "dev": "cd packages/frontend && PORT=3001 npm run dev",
+    "dev:all": "concurrently \"PORT=3000 npm --prefix packages/backend run dev\" \"PORT=3001 npm --prefix packages/frontend run dev\""
+  },
   "dependencies": {
     "@s-ui/mono": "^2.46.0"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
   }
 }
