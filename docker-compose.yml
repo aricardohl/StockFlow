@@ -1,0 +1,55 @@
+services:
+  # ─────────────────────────────────────────────────────────────────────────
+  # StockFlow API (Express + Worker)
+  # Build context is the monorepo root so npm workspaces resolve correctly.
+  # ─────────────────────────────────────────────────────────────────────────
+  api:
+    build:
+      context: .
+      dockerfile: packages/backend/Dockerfile
+    container_name: stockflow_api
+    ports:
+      - "${PORT:-3000}:3000"
+    env_file:
+      - packages/backend/.env        # ignored by git; copy from .env.example
+    environment:
+      - NODE_ENV=production
+      # Override the RabbitMQ URL: inside Docker the hostname is the service name
+      - RABBITMQ_URL=amqp://rabbitmq:5672
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - stockflow_net
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # RabbitMQ message broker
+  # ─────────────────────────────────────────────────────────────────────────
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: stockflow_queue
+    ports:
+      - "5672:5672"     # AMQP (used by Node.js)
+      - "15672:15672"   # Management UI  →  http://localhost:15672
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    restart: unless-stopped
+    networks:
+      - stockflow_net
+
+networks:
+  stockflow_net:
+    driver: bridge
+
+volumes:
+  rabbitmq_data:
