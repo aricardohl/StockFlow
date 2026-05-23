@@ -14,17 +14,27 @@ async function startServer() {
     process.exit(1);
   }
 
-  // RabbitMQ es opcional: si no está disponible el servidor igual arranca
-  try {
-    await connectRabbitMQ();
-    await startWorker();
-  } catch (err) {
-    console.warn('[RabbitMQ] No disponible, el worker no está activo:', err.message);
-  }
-
+  // Escuchar ANTES de RabbitMQ para que Render detecte el puerto inmediatamente
   app.listen(PORT, () => {
     console.log(`>>> Servidor escuchando en el puerto ${PORT}`);
   });
+
+  // RabbitMQ en background: si falla no bloquea el servidor
+  connectRabbitMQ()
+    .then(async (res) => {
+      if (!res) {
+        console.warn('[RabbitMQ] Conexión fallida. Worker no arrancará.');
+        return;
+      }
+      try {
+        await startWorker();
+      } catch (err) {
+        console.warn('[RabbitMQ] Error al arrancar el worker:', err.message);
+      }
+    })
+    .catch((err) => {
+      console.warn('[RabbitMQ] No disponible, el worker no está activo:', err.message);
+    });
 }
 
 startServer();
