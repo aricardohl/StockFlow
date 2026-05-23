@@ -11,7 +11,7 @@
     "backend": {
       "root": "packages/backend",
       "routePrefix": "/_/backend",
-      "framework": "nodejs",
+      "framework": "express",
       "entrypoint": "api/index.js"
     }
   }
