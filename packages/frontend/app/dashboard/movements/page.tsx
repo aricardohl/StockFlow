@@ -2,9 +2,9 @@
 
 import { useState, useEffect, useCallback, Fragment } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
-import { format, subDays } from 'date-fns';
-import { Movement, Branch, MovementStatus, ReportItem } from '../../types';
-import { getMovements, getMovement, getReport } from '../../services/movementService';
+import { format } from 'date-fns';
+import { Movement, Branch, MovementStatus } from '../../types';
+import { getMovements, getMovement } from '../../services/movementService';
 import { getBranches } from '../../services/branchService';
 import { usePolling } from '../../hooks/usePolling';
 
@@ -33,11 +33,6 @@ export default function MovementsPage() {
   const [branchFilter, setBranchFilter] = useState('');
   const [detail, setDetail] = useState<Movement | null>(null);
   const [loading, setLoading] = useState(true);
-  const [report, setReport] = useState<ReportItem[]>([]);
-  const [reportLoading, setReportLoading] = useState(false);
-  const [startDate, setStartDate] = useState(format(subDays(new Date(), 30), 'yyyy-MM-dd'));
-  const [endDate, setEndDate] = useState(format(new Date(), 'yyyy-MM-dd'));
-
   const hasPending = movements.some((m) => m.estado === 'pending');
 
   const fetchMovements = useCallback(async () => {
@@ -67,17 +62,6 @@ export default function MovementsPage() {
       setDetail(await getMovement(id));
     } catch {
       toast.error('Error al cargar detalle');
-    }
-  };
-
-  const fetchReport = async () => {
-    setReportLoading(true);
-    try {
-      setReport(await getReport(startDate, endDate));
-    } catch {
-      toast.error('Error al generar reporte');
-    } finally {
-      setReportLoading(false);
     }
   };
 
@@ -154,53 +138,7 @@ export default function MovementsPage() {
           )}
         </div>
 
-        {/* ─── Reporte por rango de fechas ─── */}
-        <div className="space-y-4 border-t border-zinc-200 pt-6">
-          <h2 className="text-lg font-semibold">Reporte por rango de fechas</h2>
-          <div className="flex flex-wrap gap-3 items-end">
-            <div>
-              <label className="block text-xs font-medium mb-1 text-zinc-600">Desde</label>
-              <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)}
-                className="border rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-500" />
-            </div>
-            <div>
-              <label className="block text-xs font-medium mb-1 text-zinc-600">Hasta</label>
-              <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)}
-                className="border rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-500" />
-            </div>
-            <button
-              onClick={fetchReport}
-              disabled={reportLoading}
-              className="px-4 py-2 bg-zinc-900 text-white text-sm rounded-md hover:bg-zinc-700 disabled:opacity-50 transition-colors"
-            >
-              {reportLoading ? 'Generando...' : 'Generar'}
-            </button>
-          </div>
 
-          {report.length > 0 && (
-            <div className="overflow-x-auto rounded-lg border border-zinc-200">
-              <table className="w-full text-sm">
-                <thead className="bg-zinc-50">
-                  <tr>
-                    {['Tipo', 'Sucursal', 'Movimientos', 'Cantidad Total'].map((h) => (
-                      <th key={h} className="px-4 py-3 text-left font-medium text-zinc-600">{h}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-zinc-100">
-                  {report.map((r, i) => (
-                    <tr key={i} className="hover:bg-zinc-50">
-                      <td className="px-4 py-3">{TYPE_LABEL[r.tipo] ?? r.tipo}</td>
-                      <td className="px-4 py-3">{r.sucursal}</td>
-                      <td className="px-4 py-3">{r.totalMovimientos}</td>
-                      <td className="px-4 py-3 font-semibold">{r.cantidadTotal}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
       </div>
 
       {/* ─── Modal detalle ─── */}

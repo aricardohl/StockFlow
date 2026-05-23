@@ -40,6 +40,13 @@ export interface Movement {
   updatedAt: string;
 }
 
+export interface ReportItem {
+  tipo: string;
+  sucursal: string;
+  totalMovimientos: number;
+  cantidadTotal: number;
+}
+
 export interface User {
   id: string;
   nombre: string;
@@ -52,9 +59,4 @@ export interface AuthResponse {
   user: User;
 }
 
-export interface ReportItem {
-  tipo: MovementType;
-  sucursal: string;
-  totalMovimientos: number;
-  cantidadTotal: number;
-}
+
