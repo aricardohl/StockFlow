@@ -1,15 +1,16 @@
 {
+  "packageManager": "npm@11.11.0",
   "workspaces": [
     "packages/*"
   ],
   "scripts": {
-    "dev": "cd packages/frontend && PORT=3001 npm run dev",
-    "dev:all": "concurrently \"PORT=3000 npm --prefix packages/backend run dev\" \"PORT=3001 npm --prefix packages/frontend run dev\""
-  },
-  "dependencies": {
-    "@s-ui/mono": "^2.46.0"
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "lint": "turbo lint"
   },
   "devDependencies": {
-    "concurrently": "^8.2.2"
+    "concurrently": "^8.2.2",
+    "eslint": "^9.39.4",
+    "turbo": "^2.9.14"
   }
 }
